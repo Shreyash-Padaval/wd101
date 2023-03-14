@@ -1,67 +1,107 @@
-let users = [];
+const form = document.querySelector('form');
+const table = document.querySelector('table');
 
-let table = document.getElementById('users');
+let entries = [];
 
-let form = document.querySelector('form');
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
+// Load table headers on page load
+window.addEventListener('load', () => {
+  const headerRow = document.createElement('tr');
+  const nameHeader = document.createElement('th');
+  nameHeader.textContent = 'Name';
+  const emailHeader = document.createElement('th');
+  emailHeader.textContent = 'Email';
+  const passwordHeader = document.createElement('th');
+  passwordHeader.textContent = 'Password';
+  const dobHeader = document.createElement('th');
+  dobHeader.textContent = 'Dob';
+  const acceptedHeader = document.createElement('th');
+  acceptedHeader.textContent = 'Accepted terms?';
 
-  let name = document.getElementById('name').value.trim();
-  let email = document.getElementById('email').value.trim();
-  let password = document.getElementById('password').value.trim();
-  let dob = document.getElementById('dob').value.trim();
-  let terms = document.getElementById('terms').checked;
+  headerRow.appendChild(nameHeader);
+  headerRow.appendChild(emailHeader);
+  headerRow.appendChild(passwordHeader);
+  headerRow.appendChild(dobHeader);
+  headerRow.appendChild(acceptedHeader);
 
-  if (!isValidEmail(email)) {
-    alert('Invalid email address');
-    return;
-  }
-
-  let age = calculateAge(dob);
-  if (age < 18 || age > 55) {
-    alert('Age must be between 18 and 55');
-    return;
-  }
-
-  users.push({
-    name: name,
-    email: email,
-    password: password,
-    dob: dob,
-    terms: terms
-  });
-
-  addRowToTable(name, email, password, dob, terms);
-
-  form.reset();
+  table.appendChild(headerRow);
 });
 
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+// Add new entry to the table and array
+function addEntry(name, email, password, dob, accepted) {
+  entries.push({ name, email, password, dob, accepted });
+
+  const newRow = document.createElement('tr');
+  const nameCell = document.createElement('td');
+  nameCell.textContent = name;
+  const emailCell = document.createElement('td');
+  emailCell.textContent = email;
+  const passwordCell = document.createElement('td');
+  passwordCell.textContent = password;
+  const dobCell = document.createElement('td');
+  dobCell.textContent = dob;
+  const acceptedCell = document.createElement('td');
+  acceptedCell.textContent = accepted;
+
+  newRow.appendChild(nameCell);
+  newRow.appendChild(emailCell);
+  newRow.appendChild(passwordCell);
+  newRow.appendChild(dobCell);
+  newRow.appendChild(acceptedCell);
+
+  table.appendChild(newRow);
 }
 
-function calculateAge(dob) {
-  let today = new Date();
-  let birthDate = new Date(dob);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  let month = today.getMonth() - birthDate.getMonth();
-  if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+// Validate email address
+function validateEmail(email) {
+  const re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
+
+// Validate age
+function validateAge(dob) {
+  const today = new Date();
+  const birthdate = new Date(dob);
+  const age = today.getFullYear() - birthdate.getFullYear();
+  const month = today.getMonth() - birthdate.getMonth();
+  if (month < 0 || (month === 0 && today.getDate() < birthdate.getDate())) {
     age--;
   }
-  return age;
+  return age >= 18 && age <= 55;
 }
 
-function addRowToTable(name, email, password, dob, terms) {
-  let row = table.insertRow();
-  let nameCell = row.insertCell();
-  let emailCell = row.insertCell();
-  let passwordCell = row.insertCell();
-  let dobCell = row.insertCell();
-  let termsCell = row.insertCell();
+// Submit event listener
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = e.target.name.value;
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+  const dob = e.target.dob.value;
+  const accepted = e.target.accepted.checked;
 
-  nameCell.textContent = name;
-  emailCell.textContent = email;
-  passwordCell.textContent = password;
-  dobCell.textContent = dob;
-  termsCell.textContent = terms
+  if (validateEmail(email) && validateAge(dob)) {
+    addEntry(name, email, password, dob, accepted);
+    form.reset();
+  } else {
+    alert('Invalid email or age');
+  }
+});
 
+// Load saved entries on page load
+window.addEventListener('load', () => {
+  const savedEntries = JSON.parse(localStorage.getItem('entries')) || [];
+  savedEntries.forEach(entry => {
+    addEntry(entry.name, entry.email, entry.password, entry.dob, entry.accepted);
+  });
+});
+
+// Save entries to local storage on submit
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = e.target.name.value;
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+  const dob = e.target.dob.value;
+  const accepted = e.target.accepted.checked;
+
+  if (validateEmail(email) && validateAge(dob)) {
+    addEntry(name, email, password, dob,
