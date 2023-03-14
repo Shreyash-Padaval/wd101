@@ -1,52 +1,67 @@
-// Get references to HTML elements
-const form = document.getElementById('registration-form');
-const nameInput = document.getElementById('name');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
-const dobInput = document.getElementById('dob');
-const termsInput = document.getElementById('terms');
-const table = document.getElementById('registration-table');
+// Get the form element and the table element from the DOM
+const form = document.getElementById("registration-form");
+const table = document.getElementById("registration-table");
 
-// Function to add a row to the table
-function addTableRow(name, email, password, dob, termsAccepted) {
-  const newRow = table.insertRow();
+// Create an empty array to store the form submissions
+let submissions = [];
 
-  const nameCell = newRow.insertCell();
-  nameCell.innerText = name;
+// Function to add a new row to the table with the form data
+function addTableRow(formData) {
+  // Create a new row element
+  const newRow = document.createElement("tr");
 
-  const emailCell = newRow.insertCell();
-  emailCell.innerText = email;
+  // Create new cell elements for each piece of form data and add them to the row
+  const nameCell = document.createElement("td");
+  nameCell.textContent = formData.name;
+  newRow.appendChild(nameCell);
 
-  const passwordCell = newRow.insertCell();
-  passwordCell.innerText = password;
+  const emailCell = document.createElement("td");
+  emailCell.textContent = formData.email;
+  newRow.appendChild(emailCell);
 
-  const dobCell = newRow.insertCell();
-  dobCell.innerText = dob;
+  const passwordCell = document.createElement("td");
+  passwordCell.textContent = formData.password;
+  newRow.appendChild(passwordCell);
 
-  const termsCell = newRow.insertCell();
-  termsCell.innerText = termsAccepted ? 'Yes' : 'No';
+  const dobCell = document.createElement("td");
+  dobCell.textContent = formData.dob;
+  newRow.appendChild(dobCell);
+
+  const termsCell = document.createElement("td");
+  termsCell.textContent = formData.termsAccepted ? "Yes" : "No";
+  newRow.appendChild(termsCell);
+
+  // Add the new row to the table
+  table.appendChild(newRow);
 }
 
-// Handle form submission
-form.addEventListener('submit', (event) => {
-  event.preventDefault(); // prevent the default form submission behavior
+// Event listener for the form submission
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
 
-  // Get form input values
-  const name = nameInput.value.trim();
-  const email = emailInput.value.trim();
-  const password = passwordInput.value.trim();
-  const dob = dobInput.value;
-  const termsAccepted = termsInput.checked;
+  // Get the form data and add it to the submissions array
+  const formData = {
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    password: document.getElementById("password").value,
+    dob: document.getElementById("dob").value,
+    termsAccepted: document.getElementById("terms").checked
+  };
+  submissions.push(formData);
 
-  // Validate input values
-  if (!name || !email || !password || !dob || !termsAccepted) {
-    alert('Please fill in all fields and accept the terms');
-    return;
-  }
+  // Add the form data to the table
+  addTableRow(formData);
 
-  // Add the data to the table
-  addTableRow(name, email, password, dob, termsAccepted);
-
-  // Clear the form
+  // Clear the form inputs
   form.reset();
+
+  // Save the submissions array to local storage
+  localStorage.setItem("submissions", JSON.stringify(submissions));
 });
+
+// On page load, get the saved submissions from local storage and add them to the table
+const savedSubmissions = JSON.parse(localStorage.getItem("submissions"));
+if (savedSubmissions) {
+  submissions = savedSubmissions;
+  savedSubmissions.forEach(addTableRow);
+}
