@@ -1,42 +1,45 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Registration Form</title>
-  </head>
-  <body>
-    <form>
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name"><br>
+<head>
+	<title>Registration Form</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<h1>Registration Form</h1>
+	<form id="registration-form">
+		<label for="name">Name</label>
+		<input type="text" id="name" name="name" required>
 
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email"><br>
+		<label for="email">Email</label>
+		<input type="email" id="email" name="email" required>
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password"><br>
+		<label for="password">Password</label>
+		<input type="password" id="password" name="password" required>
 
-      <label for="dob">Date of Birth:</label>
-      <input type="date" id="dob" name="dob"><br>
+		<label for="dob">Date of Birth</label>
+		<input type="date" id="dob" name="dob" required>
 
-      <label for="accepted-terms">Accepted terms?</label>
-      <input type="checkbox" id="accepted-terms" name="accepted-terms"><br>
+		<label for="terms">I accept the terms and conditions</label>
+		<input type="checkbox" id="terms" name="terms" required>
 
-      <button type="submit">Submit</button>
-    </form>
+		<button type="submit">Register</button>
+	</form>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Password</th>
-          <th>Dob</th>
-          <th>Accepted terms?</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-<script src="script.js"></script>
+	<table id="entries-table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Password</th>
+				<th>Date of Birth</th>
+				<th>Accepted terms?</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- entries will be added dynamically here -->
+		</tbody>
+	</table>
 
-  </body>
+	<script src="script.js"></script>
+</body>
 </html>
