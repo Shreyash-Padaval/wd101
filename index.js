@@ -1,67 +1,67 @@
-// Get the form element and the table element from the DOM
-const form = document.getElementById("registration-form");
-const table = document.getElementById("registration-table");
+let users = [];
 
-// Create an empty array to store the form submissions
-let submissions = [];
+let table = document.getElementById('users');
 
-// Function to add a new row to the table with the form data
-function addTableRow(formData) {
-  // Create a new row element
-  const newRow = document.createElement("tr");
+let form = document.querySelector('form');
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
 
-  // Create new cell elements for each piece of form data and add them to the row
-  const nameCell = document.createElement("td");
-  nameCell.textContent = formData.name;
-  newRow.appendChild(nameCell);
+  let name = document.getElementById('name').value.trim();
+  let email = document.getElementById('email').value.trim();
+  let password = document.getElementById('password').value.trim();
+  let dob = document.getElementById('dob').value.trim();
+  let terms = document.getElementById('terms').checked;
 
-  const emailCell = document.createElement("td");
-  emailCell.textContent = formData.email;
-  newRow.appendChild(emailCell);
+  if (!isValidEmail(email)) {
+    alert('Invalid email address');
+    return;
+  }
 
-  const passwordCell = document.createElement("td");
-  passwordCell.textContent = formData.password;
-  newRow.appendChild(passwordCell);
+  let age = calculateAge(dob);
+  if (age < 18 || age > 55) {
+    alert('Age must be between 18 and 55');
+    return;
+  }
 
-  const dobCell = document.createElement("td");
-  dobCell.textContent = formData.dob;
-  newRow.appendChild(dobCell);
+  users.push({
+    name: name,
+    email: email,
+    password: password,
+    dob: dob,
+    terms: terms
+  });
 
-  const termsCell = document.createElement("td");
-  termsCell.textContent = formData.termsAccepted ? "Yes" : "No";
-  newRow.appendChild(termsCell);
+  addRowToTable(name, email, password, dob, terms);
 
-  // Add the new row to the table
-  table.appendChild(newRow);
-}
-
-// Event listener for the form submission
-form.addEventListener("submit", function(event) {
-  event.preventDefault();
-
-  // Get the form data and add it to the submissions array
-  const formData = {
-    name: document.getElementById("name").value,
-    email: document.getElementById("email").value,
-    password: document.getElementById("password").value,
-    dob: document.getElementById("dob").value,
-    termsAccepted: document.getElementById("terms").checked
-  };
-  submissions.push(formData);
-
-  // Add the form data to the table
-  addTableRow(formData);
-
-  // Clear the form inputs
   form.reset();
-
-  // Save the submissions array to local storage
-  localStorage.setItem("submissions", JSON.stringify(submissions));
 });
 
-// On page load, get the saved submissions from local storage and add them to the table
-const savedSubmissions = JSON.parse(localStorage.getItem("submissions"));
-if (savedSubmissions) {
-  submissions = savedSubmissions;
-  savedSubmissions.forEach(addTableRow);
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
+
+function calculateAge(dob) {
+  let today = new Date();
+  let birthDate = new Date(dob);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  let month = today.getMonth() - birthDate.getMonth();
+  if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
+function addRowToTable(name, email, password, dob, terms) {
+  let row = table.insertRow();
+  let nameCell = row.insertCell();
+  let emailCell = row.insertCell();
+  let passwordCell = row.insertCell();
+  let dobCell = row.insertCell();
+  let termsCell = row.insertCell();
+
+  nameCell.textContent = name;
+  emailCell.textContent = email;
+  passwordCell.textContent = password;
+  dobCell.textContent = dob;
+  termsCell.textContent = terms
+
